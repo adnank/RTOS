@@ -11,7 +11,7 @@
 void add_CCI ()
 {
 
-    Envelope * temp;
+    Envelope * temp=K_request_msg_env();
     while (1)
     {
         printf("Entered CCI_Process\n");

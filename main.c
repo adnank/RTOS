@@ -21,10 +21,11 @@ int main()
 	init_blkOnEnv_Q();
 //	printf("All Queues and Envelope Queues Initialized!\n");
     init_TraceArrays();
+    init_helperprocess();
 	init_ioBuffers();
-	init_helperprocess();
-    printf("Initializing Signals!\n");
 	init_signals();
+    printf("Initializing Signals!\n");
+
 
 
 	init_processes();

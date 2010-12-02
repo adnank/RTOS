@@ -40,6 +40,8 @@ atomic(ON);
 	current_process = get_PCB(KBD_I);
 	//i_process_kb state is set as executing
 	context_switch(Prev_Proc, current_process);
+
+//	i_process_kb();
 	break;
 
 	case (SIGUSR2) : // i_process_crt;
@@ -53,7 +55,7 @@ atomic(ON);
 
 atomic(OFF);
 }
-//i_process_timer()
+ //i_process_timer()
 //=================================================================
 //The following I-Process is responsible for putting the keystrokes
 //from a buffer into a message envelope which can be passed.
@@ -97,26 +99,38 @@ void i_process_timer()
 
 void i_process_kb()
 {
-
+printf("IprocessKB excetuing\n");
 Envelope *input;
+//Envelope *input1;
 int j;
-	while(current_process->recievelist->head!=NULL) // endless loop
+//input1 = K_recieve_message();
+	//while(current_process->recievelist->head!=NULL) // endless loop
+	while(1)
 	{
+			printf("in while yoooooo!\n");
 			input = K_recieve_message();
-			for (j=0;j<input_buffer->Length;j++)
+			if (input!=NULL){
+/*			for (j=0;j<in_mem_p->Length;j++)
 			{
+			    printf("1 character entered in the buffer\n");
 				 input->Data[j] = input_buffer->buffer[j];
+				 printf("im lost!\n");
 			}
 //Store the string of characters from the kb buffer into msg_env
-//Set msg_env message subject field to console_input send message envelope to invoking process
+//Set msg_env message subject field to console_input send message envelope to invoking process*/
+
 		input->DestinationID = input->SenderID;
 		input->SenderID = KBD_I;
 		input->Msg_Type = KB_INPUT;
 		K_Enqueue_MsgEnv(input,current_process->Own);
 		K_send_message(input->DestinationID, input);
+			}
+			else
+                break;
 	}
 	input_buffer->Length = 0;
 	input_buffer->Read = 0;
+	printf("transcribing compelte\n");
 	context_switch(current_process,Prev_Proc);
 }
 

@@ -180,7 +180,7 @@ typedef struct io_buffer{
 	int Read;
 }io_buffer;
 
-
+io_buffer *in_mem_p;
 io_buffer *output_buffer;
 io_buffer *input_buffer;
 
@@ -264,8 +264,8 @@ int fid;
 int fid1;
 int fid2;
 char fname;
-char fname1;
-char fname2;
+char* fname1;
+char* fname2;
 int pid;
 caddr_t mmap_pointer;
 

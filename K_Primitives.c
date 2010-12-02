@@ -423,7 +423,7 @@ int K_send_message (int destination_pid, Envelope * msg_Envelope)
 
 Envelope* K_recieve_message ()
 {
-
+if (current_process->ProcID!= KBD_I){
 	printf("Entered receive_message function!\n");
 	if (current_process->recievelist->head!=NULL)
 	{
@@ -444,6 +444,20 @@ Envelope* K_recieve_message ()
 		process_switch();
 		return NULL;
 	}
+    }
+    else
+    {
+        printf("enetered the correct if statement\n");
+        Envelope *Temp=K_Dequeue_MsgEnv(current_process->recievelist);
+		if (Temp!=NULL)
+		{
+			K_add_to_trace_array (0,Temp->SenderID, Temp->DestinationID,Temp->Msg_Type);
+            printf("FUCK MY LIFE \n");
+			return Temp;
+		}
+		else
+			return NULL;
+    }
 }
 
 //MESSAGE MANAGEMENT

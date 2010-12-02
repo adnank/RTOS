@@ -246,19 +246,19 @@ void initialize_table()
 	init_table[4].priority = P_IPROCESS;
 	init_table[4].stack_size = MAX_STACKSIZE;
 	init_table[4].proc_status = IPROCESS;
-//	init_table[4].proc_address= add_KBD;		//(void*)(&add_KBD);
+	init_table[4].proc_address= i_process_kb;		//(void*)(&add_KBD);
 
 	init_table[5].process_id = CRT_I;
 	init_table[5].priority = P_IPROCESS;
 	init_table[5].stack_size = MAX_STACKSIZE;
 	init_table[5].proc_status = IPROCESS;
-//	init_table[5].proc_address= add_CRT;		//(void*)(&add_CRT);
+	init_table[5].proc_address= i_process_crt;		//(void*)(&add_CRT);
 
 	init_table[6].process_id = TIMER_I;
 	init_table[6].priority = P_IPROCESS;
 	init_table[6].stack_size = MAX_STACKSIZE;
 	init_table[6].proc_status = IPROCESS;
-//	init_table[6].proc_address= add_TIMER;		//(void*)(&add_TIMER);
+	init_table[6].proc_address= i_process_timer;		//(void*)(&add_TIMER);
 
 	init_table[7].process_id = PROC_CCI;
 	init_table[7].priority = P_P0;
@@ -318,6 +318,8 @@ void init_ioBuffers()
 	//io_buffer *input_buffer;		//declared in header file
 	output_buffer = (io_buffer*) malloc(sizeof(io_buffer));
 	input_buffer = (io_buffer*) malloc(sizeof(io_buffer));
+	//in_mem_p = (io_buffer*) malloc(sizeof(io_buffer));
+	//in_mem_p = (io_buffer *) mmap_ptr;
 
 	if(output_buffer == NULL)
 	{
@@ -336,6 +338,16 @@ void init_ioBuffers()
 
 	input_buffer->Length = 0;
 	printf("Input Buffer Created and Initialized!\n");
+
+	/*if(in_mem_p == NULL)
+	{
+		printf("Error allocating memory for output buffer\n");
+		free(in_mem_p);
+	}
+
+	in_mem_p->Length = 0;
+    printf("in_mem_p Created and Initialized!\n");
+*/
 }
 
 
