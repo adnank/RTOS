@@ -3,6 +3,7 @@
 void add_procA()
 {
 	Envelope* A = recieve_message();
+	printf("Process A has been releasef from blocked on envelope queue/n");
 	int B = release_msg_env(A);
 	static int num = 0;
 	do

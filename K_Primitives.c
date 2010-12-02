@@ -171,7 +171,6 @@ Envelope* K_Dequeue_MsgEnv(msg_env_Q* List)
 		}
 		else
 		{
-			printf("TEST2\n");
 			List->head=NULL;
 			List->tail=NULL;
 			return A;
@@ -268,7 +267,7 @@ void context_switch(NewPCB *current, NewPCB * next_proc)    //UPDATED!!!!!!!
 	{
 		//printf("inside the if statement in context switch\n");
 		current_process = next_proc;
-		//printf("HELLOW I AM CONTEXT SWITCH\n");
+//		printf("HELLOW I AM CONTEXT SWITCH\n");
 		longjmp(next_proc->jbContext, 1);
 		//printf("i am AFTER the long jump in context switch\n");
 	}
@@ -293,7 +292,7 @@ void context_switch(NewPCB *current, NewPCB * next_proc)    //UPDATED!!!!!!!
 void process_switch()     //UPDATED!!!!!!!
 {
 	int i;
-	for (i=0;i<4;i++)
+	for (i=0;i<NUM_OF_PRIORITY;i++)
 	{
 		//printf("FOR LOOP\n");
 		if (ReadyQueue[i]->Head!=NULL)
@@ -302,8 +301,6 @@ void process_switch()     //UPDATED!!!!!!!
 	NewPCB*NEXT=K_Dequeue_PCB (ReadyQueue[i]);
 	NewPCB* Temp=current_process;
 
-
-	current_process->State=READY;
 
 	//printf("PROCESS NEXT IN LINE PID %d\n",ReadyQueue[0]->Head->ProcID);
 	current_process=NEXT;
@@ -397,10 +394,12 @@ int K_send_message (int destination_pid, Envelope * msg_Envelope)
 			int A;
 			A=K_Enqueue_MsgEnv (AB, Temp->recievelist);
 			printf("sender id %d dest id%d\n",Temp->recievelist->head->SenderID,Temp->recievelist->head->DestinationID);
-			if (Temp->State==3)
+			if (Temp->State==BLK_ON_ENV)
 			{
-				Temp->State=1;
+			    printf("re-queuing\n");
+				Temp->State=READY;
 				int B;
+				//newPCB* ab=K_Dequeue_PCB(Blocked_On_Envelope[Temp->Priority]);
 				B=K_Enqueue_PCB(Temp, ReadyQueue[Temp->Priority]);
 				return (A && B);
 			}
@@ -431,15 +430,23 @@ if (current_process->ProcID!= KBD_I){
 		if (Temp!=NULL)
 		{
 			K_add_to_trace_array (0,Temp->SenderID, Temp->DestinationID,Temp->Msg_Type);
-
 			return Temp;
 		}
 		else
-			return NULL;
+		{
+		    current_process->State=BLK_ON_ENV;
+		    K_Enqueue_PCB(current_process,Blocked_On_Envelope[current_process->Priority]);
+
+		    return NULL;
+		}
+
 	}
 	else
 	{
+	    printf("The state is of proc id%d\n",current_process->State);
 		current_process->State = BLK_ON_ENV;
+		printf("The state is blocked of proc id%d\n",current_process->State);
+        printf("blocked process has PID %d\n",current_process->ProcID);
 		//K_Enqueue_PCB(current_process,Blocked_On_Envelope[current_process->Priority]);
 		process_switch();
 		return NULL;
@@ -447,16 +454,19 @@ if (current_process->ProcID!= KBD_I){
     }
     else
     {
-        printf("enetered the correct if statement\n");
         Envelope *Temp=K_Dequeue_MsgEnv(current_process->recievelist);
 		if (Temp!=NULL)
 		{
 			K_add_to_trace_array (0,Temp->SenderID, Temp->DestinationID,Temp->Msg_Type);
-            printf("FUCK MY LIFE \n");
+			printf("Sender Id %d DEST ID %d\n",Temp->SenderID,Temp->DestinationID);
 			return Temp;
 		}
 		else
-			return NULL;
+		{
+		    current_process->State = BLK_ON_ENV;
+		    return NULL;
+		}
+			//return NULL;
     }
 }
 
@@ -621,13 +631,13 @@ int K_send_console_chars (Envelope * MsgEnv)
 	{
 		int A=MsgEnv->SenderID;
 		int B;
-		B=K_send_message (0011, MsgEnv); //0011 PID of CRT i-process
+		B=K_send_message (CRT_I, MsgEnv); //0011 PID of CRT i-process
 		if (B==1)
 		{
 			Envelope * Temp=K_recieve_message();
-			if (Temp->Msg_Type==6) //CRT_akn=6
+			if (Temp->Msg_Type==CRT_ACK) //CRT_akn=6
 			{
-				Temp->Msg_Type=2; //display_acknowledgement
+				Temp->Msg_Type=DISPLAY_ACK; //display_acknowledgement
 				int C=K_send_message (A,Temp);
 				if (C==1)
 					return 1;

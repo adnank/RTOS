@@ -75,7 +75,7 @@ int main (int argc, char * argv[])
 	int parent_pid, fid;
 
 	caddr_t mmap_ptr;
-	io_buffer * in_mem_p;
+	io_buffer* in_mem_p;
 	char c;
 
 
@@ -103,7 +103,7 @@ int main (int argc, char * argv[])
     }
 	
 	in_mem_p = (io_buffer *) mmap_ptr; // now we have a shared memory pointer
-
+//	input_buffer= (io_buffer*) in_mem_p;
 	// read keyboard
 	buf_index = 0;
 	in_mem_p->Read = 0; 
@@ -117,10 +117,14 @@ int main (int argc, char * argv[])
 				} else {
 					in_mem_p->buffer[buf_index] = '\0';
 					in_mem_p->Read = 1;  //set ready status bit
+					in_mem_p->Length=buf_index;
+					printf("Keyboard Helper detects length of %d\n\n",in_mem_p->Length);
+					//strcpy(input_buffer->buffer,in_mem_p->buffer);
 					kill(parent_pid,SIGUSR1); //send a signal to parent	
 					buf_index = 0;  // for now, just restart
 					while( in_mem_p->Read == 1)
 						usleep(100000);
+									
 				}
 	
 	}

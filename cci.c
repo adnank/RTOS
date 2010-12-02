@@ -10,51 +10,59 @@
 
 void add_CCI ()
 {
-
-    Envelope * temp=K_request_msg_env();
+    Envelope * temp;
     while (1)
     {
+        temp=K_request_msg_env();
         printf("Entered CCI_Process\n");
+        //K_Enqueue_MsgEnv(temp,current_process->Own);
          int T= K_get_console_chars (temp);
         while (1)
         {
-            printf("blocking on receive\n");
+            printf("CCI is Blocking on Recieve..waiting for input\n");
             temp=K_recieve_message();
+            if (temp!=NULL){
             if (temp->Msg_Type==KB_INPUT);
                 break;
+            }
         }
-        printf("good job joel\n");
+        printf("Keyboard Helper has Send MSG to CCI\n");
 
-        Envelope * temp2 = K_request_msg_env();
+        //Envelope * temp2 = K_request_msg_env();
         //int T;
-        char tempstring[MSG_DATA];
+ /*       char tempstring[MSG_DATA];
         int i;
         for (i=0;i<MSG_DATA;i++)
-            tempstring[i] =  temp2->Data[i];
+            tempstring[i] =  temp->Data[i];
         char x[3];
+        fscanf(tempstring, "%s %i %d", x, &y, &z);
+             //store the context field of message_envelope into a temperory string
+             //variable*/
+
         int y=0;
         int z=0;
-        sscanf(tempstring, "%s %i %d", x, &y, &z);
-             //store the context field of message_envelope into a temperory string
-             //variable
-        if(x[0] =='s' && x[1]=='\n')
+        if(temp->Data[0] =='s')// && temp->Data[1]=='\n')
             CCI_s();
-        if(x[0] == 'p' && x[1]=='s' && x[2]=='\n')
+        if(temp->Data[0] == 'p' && temp->Data[1]=='s')
             CCI_ps();
-        if(x[0] == 'b' && x[1]=='\n')
+        if(temp->Data[0] == 'b')
             CCI_b();
-        if(x[0] == 't' && x[1]=='\n')//if(fscanf(tempstring, "t") == 0)
+        if(temp->Data[0] == 't')//if(fscanf(tempstring, "t") == 0)
             CCI_t();
-        if(x[0] == 'n' && x[1]=='\n')//if(fscanf(tempstring, "%s %i %d", s, i, d)
+        if(temp->Data[0] == 'n')//if(fscanf(tempstring, "%s %i %d", s, i, d)
+            y = temp->Data[1];
+            z = temp->Data[2];
             CCI_n(y,z);
-        if(x[0] == 'c' && x[1]=='\n')//if(fscanf(tempstring, "c") == 0)
+        if(temp->Data[0] == 'c')//if(fscanf(tempstring, "c") == 0)
             CCI_c();
-        if(x[0] == 'c' && x[1]=='d' && x[2]=='\n')//if(fscanf(tempstring, "cd") == 0)
+        if(temp->Data[0] == 'c' && temp->Data[1]=='d')//if(fscanf(tempstring, "cd") == 0)
             CCI_cd();
-        if(x[0] == 'c' && x[1]=='t' && x[2]=='\n')//if(fscanf(tempstring, "ct") == 0)
+        if(temp->Data[0] == 'c' && temp->Data[1]=='t')//if(fscanf(tempstring, "ct") == 0)
             CCI_ct();
         else	printf("Wrong command input\n");
 
+
+        K_release_msg_envelope(temp);
              //compare the string from the temperory string variable with the
              //characters of the CCI functions (using strcmp function)
         //call the appropriate CCI function depending on the comparison and pass
@@ -70,7 +78,8 @@ void CCI_s()
 {
 	Envelope * empty_env = K_request_msg_env (); //Envelope * get an empty message envelope by
 			//calling the function
-	int B = K_send_message (0001, empty_env);
+			printf("The Command entered was 's'\n\n");
+	int B = K_send_message (PROC_A, empty_env);
 	if(B == 1)
 		printf("message was sent\n");
 	else
@@ -85,6 +94,7 @@ void CCI_ps()
 	//MsgEnv* data = request_msg_env //get an empty envelope
 	Envelope * data = K_request_msg_env ();
 	int A = K_request_process_status (data);
+	send_console_chars(data);
 	//int A = request_process_status (data)
 	if(A == 1)
 		printf("SUCCESS\n");//SUCCESS
@@ -93,7 +103,7 @@ void CCI_ps()
 
 
 	//call the CRT i-process for the printing of the text field of the data
-	printf("%s\n",data->Data);
+	//printf("%s\n",data->Data);
 }
 
 //Displays the current contents of the send and receive trace buffers

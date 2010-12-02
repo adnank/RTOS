@@ -175,6 +175,8 @@ void init_processes()
 
 		if(pcb_ptr->State == READY)
 		{
+			printf("1 pcb enqueued!\n");
+			printf("%d\n",pcb_ptr->ProcID);
 			K_Enqueue_PCB(pcb_ptr, ReadyQueue[pcb_ptr->Priority]);
 		}
 		else if(pcb_ptr->State == BLK_ON_ENV)
@@ -221,7 +223,7 @@ void initialize_table()
 	init_table[0].process_id = PROC_A;
 	init_table[0].priority = P_P1;
 	init_table[0].stack_size = MAX_STACKSIZE;
-	init_table[0].proc_status = BLK_ON_ENV;
+	init_table[0].proc_status  = READY;
 	init_table[0].proc_address= add_procA;		//(void*)(&add_procA);
 
 	init_table[1].process_id = PROC_B;

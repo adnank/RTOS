@@ -35,6 +35,7 @@ void init_helperprocess()
 	fname1 = (char *) malloc(sizeof(char)*20);
 	fname2 = (char *) malloc(sizeof(char)*20);
     caddr_t mmap_ptr;
+    io_buffer * input_buffer;
 
 	//Initialize Keyboard Helper
 	fname1 = "KeyboardBuffer";
@@ -63,6 +64,22 @@ if (status){
 	    sprintf(kbarg1, "%d", parent_pid);
 	    sprintf(kbarg2, "%d", fid1);
 
+//	mmap_ptr = mmap((caddr_t) 0,   /* Memory Location, 0 lets O/S choose */
+//		    BUFFER_SIZE,/* How many bytes to mmap */
+//		    PROT_READ | PROT_WRITE, /* Read and write permissions */
+//		    MAP_SHARED,    /* Accessible by another process */
+//		    fid1,           /* which file is associated with mmap */
+//		    (off_t) 0);    /* Offset in page frame */
+//	    if (mmap_ptr == MAP_FAILED)
+//	    {
+//	      printf("Memory Map Initialization Failed!!!!!!!!!!!!!!!... Sorry!\n");
+//		  die();
+//	    }
+
+ //       input_buffer = (io_buffer *) mmap_ptr;
+
+   //     printf("THIS IS IOBUFFER LENGTH%d\n",input_buffer->Length);
+
 	    pid = fork();
 	   if (pid == 0)
 	   {
@@ -75,30 +92,27 @@ if (status){
 	   }
 
     sleep(1);
-	mmap_ptr = mmap((caddr_t) 0,   /* Memory Location, 0 lets O/S choose */
-		    BUFFER_SIZE,/* How many bytes to mmap */
-		    PROT_READ | PROT_WRITE, /* Read and write permissions */
-		    MAP_SHARED,    /* Accessible by another process */
-		    fid1,           /* which file is associated with mmap */
-		    (off_t) 0);    /* Offset in page frame */
-	    if (mmap_ptr == MAP_FAILED)
-	    {
-	      printf("Memory Map Initialization Failed!!!!!!!!!!!!!!!... Sorry!\n");
-		  die();
-	    }
-
-	   input_buffer = (io_buffer *) mmap_ptr;
+printf("THIS IS IOBUFFER LENGTH%d\n",input_buffer->Length);
 
 	//Initialize CRT Helper
 	fname2 = "CRTBuffer";
 	fid2 = open(fname2, O_RDWR | O_CREAT, (mode_t) 0755);
 	ftruncate(fid2, BUFFER_SIZE);
-	mmap_ptr = mmap((caddr_t) 0, BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fid2,(off_t) 0);
-	if (mmap_ptr == MAP_FAILED)
-	{
-		printf("Memory Map Initialization Failed... Sorry!\n");
-		//die();
-	}
+
+//		mmap_ptr = mmap((caddr_t) 0,   /* Memory Location, 0 lets O/S choose */
+//		    BUFFER_SIZE,/* How many bytes to mmap */
+//		    PROT_READ | PROT_WRITE, /* Read and write permissions */
+//		    MAP_SHARED,    /* Accessible by another process */
+//		    fid2,           /* which file is associated with mmap */
+//		    (off_t) 0);    /* Offset in page frame */
+//	    if (mmap_ptr == MAP_FAILED)
+//	    {
+//	      printf("Memory Map Initialization Failed!!!!!!!!!!!!!!!... Sorry!\n");
+//		  die();
+//	    }
+
+//	    output_buffer = (io_buffer *) mmap_ptr;
+
 
 	//Excel Function
 	char crtarg1[15];
@@ -118,7 +132,7 @@ if (status){
 		exit(1);
 	}
 
-	output_buffer = (io_buffer *) mmap_ptr;
+
 }
 
 
@@ -134,11 +148,11 @@ void init_signals()
 	sigset(SIGQUIT,die);
 	sigset(SIGABRT,die);
 	sigset(SIGTERM,die);
-	sigset(SIGSEGV,die); //seg faults
+	//sigset(SIGSEGV,die); //seg faults
 	sigset(SIGALRM, interrupt_handler); //alarm
 	sigset(SIGUSR1, interrupt_handler); //keyboard
 	sigset(SIGUSR2, interrupt_handler); //screen
 
-	ualarm(100000,100000); //initialize alarm to signal every 100ms
+//ualarm(100000,100000); //initialize alarm to signal every 100ms
 		printf("Signals have been initialized!\n");
 }
