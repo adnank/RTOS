@@ -17,7 +17,7 @@ void keyboard_die(int signal){
 	exit(0);
 }
 
-void main (int argc, char *kbuffer[]){
+int main (int argc, char *kbuffer[]){
 
 	int parent_pid, fid;
 	char c;
@@ -33,7 +33,7 @@ void main (int argc, char *kbuffer[]){
 	  keyboard_die(0);
     }
 
-    input_buffer = mmap_pointer;
+    input_buffer = (io_buffer*) mmap_pointer;
     input_buffer->Length = 0;
     input_buffer->Read = 0;
 
@@ -43,6 +43,7 @@ void main (int argc, char *kbuffer[]){
 
     	if (c == '\n' || input_buffer->Length == bufsize){
     		input_buffer->Read = 1;
+		printf("signal is being sent\n");
     		kill(parent_pid, SIGUSR1);
     		while (input_buffer->Read == 1){
     			usleep(100000);
@@ -52,6 +53,6 @@ void main (int argc, char *kbuffer[]){
     		input_buffer->buffer[input_buffer->Length] = c;
     	}
     }
-
+    return 0;
 }
 

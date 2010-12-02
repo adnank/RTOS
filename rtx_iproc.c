@@ -34,10 +34,12 @@ atomic(ON);
 	//context_switch(current_process,);
 	break;
 
-	case (SIGUSR1) : // i_process_kb
+
+    case (SIGUSR1) : // i_process_kb
+	printf("Keyboard signal received\n");
 	current_process = get_PCB(KBD_I);
 	//i_process_kb state is set as executing
-	//context_switch(current_process, )
+	context_switch(Prev_Proc, current_process);
 	break;
 
 	case (SIGUSR2) : // i_process_crt;
@@ -77,7 +79,7 @@ void i_process_timer()
 			Temp=timeout_Q->head;
 			while (Temp->clockticks==0)
 			{
-				Envelope* Send;				
+				Envelope* Send;
 				Send=K_Dequeue_MsgEnv(timeout_Q);
 				timeout_Q->free_msg_counter--;
 				Send->Msg_Type=2;

@@ -195,6 +195,8 @@ void add_KBD();
 void add_CRT();
 void add_pNull();
 void add_CLK();
+void test_proc_2();
+void test_proc_3();
 
 
 //FUNCTION PROTOTYPES
@@ -212,7 +214,7 @@ void init_free_env_Q();
 
 //Primitives Prototypes
 void interrupt_handler (int variablesignal);
-void CCI_process();
+//void CCI_process();
 Envelope* K_Dequeue_MsgEnv(msg_env_Q* List);
 Envelope* K_recieve_message();
 NewPCB * get_PCB (int process_id);

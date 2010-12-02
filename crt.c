@@ -12,7 +12,7 @@ void crt_die(int signal)
 	exit(0);
 }
 
-void main (int argc, char *cbuffer[])
+int main (int argc, char *cbuffer[])
 {
 
 	int parent_pid, fid;
@@ -27,10 +27,10 @@ void main (int argc, char *cbuffer[])
 
     if (mmap_pointer == MAP_FAILED)
     {
-	  keyboard_die(0);
+	  crt_die(0);
     }
 
-    output_buffer = mmap_pointer;
+    output_buffer = (io_buffer*) mmap_pointer;
     output_buffer->Length = 0;
     output_buffer->Read = 0;
 
@@ -48,6 +48,6 @@ void main (int argc, char *cbuffer[])
     		output_buffer->Read = 0;
     	}
     }
-
+    return 0;
 }
 

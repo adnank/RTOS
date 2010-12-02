@@ -32,18 +32,25 @@ void cleanup()
 //PUT THIS IN INITIALIZATION
 void init_helperprocess()
 {
-
-	fname1 = (char *) malloc(sizeof(char)*10);
-	fname2 = (char *) malloc(sizeof(char)*10);
+	fname1 = (char *) malloc(sizeof(char)*20);
+	fname2 = (char *) malloc(sizeof(char)*20);
+    caddr_t mmap_pointer;
 
 	//Initialize Keyboard Helper
 	fname1 = "KeyboardBuffer";
 	fid1 = open(fname1, O_RDWR | O_CREAT, (mode_t) 0755);
 	ftruncate(fid1, BUFFER_SIZE);
-	mmap_pointer = mmap((caddr_t) 0, BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fid1,(off_t) 0);
+
+
+	mmap_pointer = mmap((caddr_t) 0,   /* Memory Location, 0 lets O/S choose */
+		    BUFFER_SIZE,/* How many bytes to mmap */
+		    PROT_READ | PROT_WRITE, /* Read and write permissions */
+		    MAP_SHARED,    /* Accessible by another process */
+		    fid1,           /* which file is associated with mmap */
+		    (off_t) 0);    /* Offset in page frame */
 	    if (mmap_pointer == MAP_FAILED)
 	    {
-	      printf("Memory Map Initialization Failed... Sorry!\n");
+	      printf("Memory Map Initialization Failed!!!!!!!!!!!!!!!... Sorry!\n");
 		  die();
 	    }
 
@@ -60,7 +67,8 @@ void init_helperprocess()
 	    pid = fork();
 	   if (pid == 0)
 	   {
-	          execl("./keyboard", "keyboard", kbarg1, kbarg2, (char *)0);
+	        int a  = execl("./Keyboard", "Keyboard", kbarg1, kbarg2, (char *)0);
+	        printf("%d\n", a);
 	            fprintf(stderr,"FAILED ON KEYBOARD EXECUTING, errno %d\n",errno);
 	            inputpid = getpid();
 	            cleanup();
@@ -91,7 +99,7 @@ void init_helperprocess()
 	pid = fork();
 	if (pid == 0)
 	{
-		execl("./crt", "crt", crtarg1, crtarg2, (char *)0);
+		execl("./CRT", "CRT", crtarg1, crtarg2, (char *)0);
 		fprintf(stderr,"FAILED AT CRT EXECUTING, errno %d\n",errno);
 		inputpid = getpid();
 		cleanup();

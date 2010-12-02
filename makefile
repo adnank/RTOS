@@ -3,6 +3,9 @@ CC= gcc
 
 RTX_all: RTX Keyboard CRT
 
+clean:
+	@rm -f -r *.o
+
 RTX: K_Primitives.o primitives.o atomic.o cci.o init.o main.o rtx_iproc.o terminate.o userProcesses.o wallclock.o initialize.o
 	gcc -o RTX K_Primitives.o primitives.o atomic.o cci.o init.o main.o rtx_iproc.o terminate.o userProcesses.o wallclock.o initialize.o
 

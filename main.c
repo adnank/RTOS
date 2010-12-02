@@ -8,8 +8,7 @@ int main()
 	int i;
 	printf("Starting.....!\n");
 
-	printf("Initializing Signals!\n");
-	init_signals();
+
 
 	time_initialize();
 
@@ -23,12 +22,17 @@ int main()
 //	printf("All Queues and Envelope Queues Initialized!\n");
     init_TraceArrays();
 	init_ioBuffers();
+	init_helperprocess();
+    printf("Initializing Signals!\n");
+	init_signals();
+
 
 	init_processes();
 //	printf("Initialising Processes!\n");
 
 
-//	init_helperprocess();
+
+
 //	printf("KBD and CRT Processes initialized and forked!\n");
 
 	return 0;

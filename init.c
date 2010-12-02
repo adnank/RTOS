@@ -264,13 +264,13 @@ void initialize_table()
 	init_table[7].priority = P_P0;
 	init_table[7].stack_size = MAX_STACKSIZE;
 	init_table[7].proc_status = READY;
-//	init_table[7].proc_address= add_CCI;		//(void*)(&add_CCI);
+	init_table[7].proc_address= add_CCI;		//(void*)(&add_CCI);
 
 	init_table[8].process_id = PROC_WALL_CLK;
 	init_table[8].priority = P_P0;
 	init_table[8].stack_size = MAX_STACKSIZE;
 	init_table[8].proc_status = READY;
-//	init_table[8].proc_address= add_CLK;		//(void*)(&add_CLK);
+	init_table[8].proc_address= test_proc_3;		//(void*)(&add_CLK);
 
 	printf("initialization table created!\n");
 }

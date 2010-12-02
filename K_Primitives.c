@@ -109,7 +109,7 @@ int K_Sort_Envelope_Enqueue (Envelope * msg_env)
 
 int K_Enqueue_PCB (NewPCB* Temp,QueuePCB* List)
 {
-	printf("Entered enqueue_PCB function!\n");
+	//printf("Entered enqueue_PCB function!\n");
 	if (Temp==NULL)
 			return 0;
 	if (List->Head==NULL && List->Tail==NULL)
@@ -233,7 +233,7 @@ NewPCB * K_Dequeue_PCB (QueuePCB* List)
 
 	if (List->Head!=NULL && List->Tail!=NULL)
 	{
-		printf("Entered DeQueue PCB function\n");
+		//printf("Entered DeQueue PCB function\n");
 		NewPCB *Temp=List->Head;
 		if (List->Head->Next==NULL)
 		{
@@ -259,8 +259,22 @@ NewPCB * K_Dequeue_PCB (QueuePCB* List)
 
 
 //CONTEXT SWITCH
+void context_switch(NewPCB *current, NewPCB * next_proc)    //UPDATED!!!!!!!
+{
+	int return_val = setjmp(current->jbContext);
+	//printf("HELLOW I AM CONTEXT SWITCH\n");
+	//printf("%d\n\n",return_val);
+	if(return_val == 0)
+	{
+		//printf("inside the if statement in context switch\n");
+		current_process = next_proc;
+		//printf("HELLOW I AM CONTEXT SWITCH\n");
+		longjmp(next_proc->jbContext, 1);
+		//printf("i am AFTER the long jump in context switch\n");
+	}
+}
 
-void context_switch(NewPCB *current, NewPCB *next_proc)
+/*void context_switch(NewPCB *current, NewPCB *next_proc)
 {
 	printf("Entered Context switch\n");
 	int return_val = setjmp(current->jbContext);
@@ -272,12 +286,38 @@ void context_switch(NewPCB *current, NewPCB *next_proc)
 		longjmp(next_proc->jbContext, 1);
 		printf("exit if in context\n");
 	}
-}
+}*/
 
 
 //PROCESS_SWITCH
+void process_switch()     //UPDATED!!!!!!!
+{
+	int i;
+	for (i=0;i<4;i++)
+	{
+		//printf("FOR LOOP\n");
+		if (ReadyQueue[i]->Head!=NULL)
+			break;
+	}
+	NewPCB*NEXT=K_Dequeue_PCB (ReadyQueue[i]);
+	NewPCB* Temp=current_process;
 
-void process_switch()
+
+	current_process->State=READY;
+
+	//printf("PROCESS NEXT IN LINE PID %d\n",ReadyQueue[0]->Head->ProcID);
+	current_process=NEXT;
+	context_switch (Temp,NEXT);
+
+	//printf("after context_switch\n");
+	//printf("OLD CURRENT PROCESS HAS PID %d\n",current_process->ProcID);
+	//printf("NEW CURRENT PROCESS HAS PID %d\n",current_process->ProcID);
+
+	current_process->State=EXECUTING;
+	NEXT=NULL;
+}
+
+/*void process_switch()
 {
 	printf("Entered process_switch\n");
 	int i;
@@ -294,13 +334,13 @@ void process_switch()
 	current_process-> State = EXECUTING;
 	NEXT = NULL;
 	printf("completed process switch!\n");
-}
+}*/
 
 //TRACE ARRAYS
 
 void K_add_to_trace_array (int trace_type, int sender_id, int destination_id, int message_type)
 {
-	// trace_type=1 means SEND and trace_type=0 means recieve
+	// trace_type=1 means SEND and trace_type=0 means
 	printf("Entered add_to_trace_array function!\n");
 	if (trace_type==1)
 	{
@@ -391,11 +431,7 @@ Envelope* K_recieve_message ()
 		if (Temp!=NULL)
 		{
 			K_add_to_trace_array (0,Temp->SenderID, Temp->DestinationID,Temp->Msg_Type);
-			if (current_process->State==3)
-			{
-				K_Enqueue_PCB(current_process, ReadyQueue[current_process->Priority]);
-				current_process->State=1;
-			}
+
 			return Temp;
 		}
 		else
@@ -403,8 +439,9 @@ Envelope* K_recieve_message ()
 	}
 	else
 	{
-		current_process->State=3;
-		K_Enqueue_PCB(current_process,Blocked_On_Resources[current_process->Priority]);
+		current_process->State = BLK_ON_ENV;
+		//K_Enqueue_PCB(current_process,Blocked_On_Envelope[current_process->Priority]);
+		process_switch();
 		return NULL;
 	}
 }
@@ -478,12 +515,12 @@ int K_release_msg_envelope (Envelope * msg_Envelope)
 
 int K_release_processor ()
 {
-	printf("Entered release_processor function!\n");
+	//printf("Entered release_processor function!\n");
 	current_process->State = READY;
 	K_Enqueue_PCB(current_process,ReadyQueue[current_process->Priority]);
 	process_switch();
 	//return A;
-	printf("exited release_processor!\n");
+	//printf("exited release_processor!\n");
 }
 
 //NULL PROCESS
@@ -655,6 +692,32 @@ int K_Enqueue_PCBLIST(NewPCB* Temp, QueuePCB* List)
         return 1;
     }
     return 0;
+}
+
+//test processes
+/*void test_proc_2() {            ////UPDATED!!!!!!!
+
+	while (1) {
+	printf("test proc 2\n");
+	sleep(1);
+	printf("sleep done 2\n");
+	release_processor();
+	printf("release done 2\n");
+	}
+
+}*/
+
+void test_proc_3() {   ////UPDATED!!!!!!!
+
+	while (1) {
+	//printf("test proc 3\n");
+	//sleep(1);
+	//printf("Test 3\n");
+	//printf("sleep done 3\n");
+	release_processor();
+	//printf("release done 3\n");
+	}
+
 }
 
 
